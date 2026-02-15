@@ -64,3 +64,5 @@ lib/
 ```
 
 ---
+
+*Made with ❤️ for students everywhere.*
