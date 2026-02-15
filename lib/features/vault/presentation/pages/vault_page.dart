@@ -1,13 +1,23 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/colors.dart';
+import 'package:lecturio/core/constants/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'subject_detail_page.dart';
-import '../../../../injection_container.dart';
-import '../../../../core/data/repositories/subject_repository.dart';
+import 'package:lecturio/features/vault/presentation/pages/subject_detail_page.dart';
+import 'package:lecturio/features/vault/presentation/widgets/upload_file_sheet.dart';
+import 'package:lecturio/injection_container.dart';
+import 'package:lecturio/core/data/repositories/subject_repository.dart';
+import 'package:lecturio/core/data/repositories/note_repository.dart';
+import 'package:lecturio/core/data/repositories/vault_repository.dart';
+import 'package:lecturio/features/vault/domain/models/vault_item.dart';
+import 'package:hive/hive.dart';
 
-class VaultPage extends StatelessWidget {
+class VaultPage extends StatefulWidget {
   const VaultPage({super.key});
 
+  @override
+  State<VaultPage> createState() => _VaultPageState();
+}
+
+class _VaultPageState extends State<VaultPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,6 +47,16 @@ class VaultPage extends StatelessWidget {
               child: Builder(
                 builder: (context) {
                   final subjects = sl<SubjectRepository>().getAllSubjects();
+                  if (subjects.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'No subjects created yet',
+                        style: GoogleFonts.outfit(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    );
+                  }
                   return GridView.builder(
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
@@ -51,7 +71,9 @@ class VaultPage extends StatelessWidget {
                       return _buildSubjectFolderCard(
                         context,
                         name: subject.name,
-                        fileCount: 0, // Placeholder for now
+                        fileCount: sl<VaultRepository>()
+                            .getItemsBySubject(subject.id)
+                            .length,
                         color: Color(int.parse(subject.color)),
                       );
                     },
@@ -64,7 +86,18 @@ class VaultPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         heroTag: 'vault_fab',
-        onPressed: () {},
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (context) => const UploadFileSheet(),
+          ).then((value) {
+            if (value == true) {
+              setState(() {});
+            }
+          });
+        },
         backgroundColor: AppColors.accentCoral,
         child: const Icon(Icons.upload_file),
       ),
@@ -72,6 +105,11 @@ class VaultPage extends StatelessWidget {
   }
 
   Widget _buildVaultStats() {
+    final noteCount = sl<NoteRepository>().getAllNotes().length;
+    final vaultItems = sl<VaultRepository>().getAllItems();
+    final pdfCount = vaultItems.where((item) => item.type == 'pdf').length;
+    final imageCount = vaultItems.where((item) => item.type == 'image').length;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -83,14 +121,24 @@ class VaultPage extends StatelessWidget {
         children: [
           _buildStatColumn(
             'PDFs',
-            '45',
+            pdfCount.toString(),
             Icons.picture_as_pdf,
             Colors.redAccent,
           ),
           _buildDivider(),
-          _buildStatColumn('Images', '128', Icons.image, Colors.blueAccent),
+          _buildStatColumn(
+            'Images',
+            imageCount.toString(),
+            Icons.image,
+            Colors.blueAccent,
+          ),
           _buildDivider(),
-          _buildStatColumn('Notes', '32', Icons.notes, Colors.amber),
+          _buildStatColumn(
+            'Notes',
+            noteCount.toString(),
+            Icons.notes,
+            Colors.amber,
+          ),
         ],
       ),
     );

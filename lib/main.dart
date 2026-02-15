@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'core/theme/app_theme.dart';
-import 'core/models/subject.dart';
-import 'features/dashboard/domain/models/exam.dart';
-import 'features/study/domain/models/note.dart';
-import 'features/vault/domain/models/vault_item.dart';
-import 'features/navigation/presentation/pages/splash_page.dart';
-import 'injection_container.dart' as di;
+import 'package:lecturio/core/theme/app_theme.dart';
+import 'package:lecturio/core/models/subject.dart';
+import 'package:lecturio/features/dashboard/domain/models/exam.dart';
+import 'package:lecturio/features/study/domain/models/note.dart';
+import 'package:lecturio/features/vault/domain/models/vault_item.dart';
+import 'package:lecturio/features/navigation/presentation/pages/splash_page.dart';
+import 'package:lecturio/injection_container.dart' as di;
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'features/dashboard/presentation/bloc/exam_bloc.dart';
-import 'features/navigation/presentation/bloc/navigation_bloc.dart';
+import 'package:lecturio/features/dashboard/presentation/bloc/exam_bloc.dart';
+import 'package:lecturio/features/navigation/presentation/bloc/navigation_bloc.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -27,7 +27,7 @@ void main() async {
   Hive.registerAdapter(NoteAdapter());
   Hive.registerAdapter(VaultItemAdapter());
 
-  // Initialize Boxes with specific types to avoid Box<dynamic> conflicts
+  // Initialize Boxes with specific types
   await Hive.openBox<Subject>('subjects');
   await Hive.openBox<Exam>('exams');
   await Hive.openBox<Note>('notes');

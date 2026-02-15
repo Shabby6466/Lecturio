@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/colors.dart';
+import 'package:lecturio/core/constants/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/exam_bloc.dart';
-import '../widgets/exam_card.dart';
-import '../widgets/add_exam_sheet.dart';
-import '../../../../injection_container.dart';
-import '../../../../core/data/repositories/subject_repository.dart';
+import 'package:lecturio/features/dashboard/presentation/bloc/exam_bloc.dart';
+import 'package:lecturio/features/dashboard/presentation/widgets/exam_card.dart';
+import 'package:lecturio/features/dashboard/presentation/widgets/add_exam_sheet.dart';
+import 'package:lecturio/injection_container.dart';
+import 'package:lecturio/core/data/repositories/subject_repository.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -126,34 +126,14 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _buildReminderList() {
-    return ListView.separated(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: 5,
-      separatorBuilder: (context, index) => const SizedBox(height: 12),
-      itemBuilder: (context, index) {
-        return Card(
-          child: ListTile(
-            leading: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppColors.primaryNavy,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(
-                Icons.notifications_active,
-                color: AppColors.accentGold,
-              ),
-            ),
-            title: const Text('Daily Review: Biology'),
-            subtitle: const Text('Time to review your Vault notes.'),
-            trailing: const Icon(
-              Icons.chevron_right,
-              color: AppColors.textSecondary,
-            ),
-          ),
-        );
-      },
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 24),
+        child: Text(
+          'No smart reminders yet',
+          style: GoogleFonts.outfit(color: AppColors.textSecondary),
+        ),
+      ),
     );
   }
 }

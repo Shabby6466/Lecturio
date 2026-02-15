@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/colors.dart';
+import 'package:lecturio/core/constants/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../widgets/ai_note_generator_sheet.dart';
+import 'package:lecturio/features/study/presentation/widgets/ai_note_generator_sheet.dart';
+import 'package:lecturio/injection_container.dart';
+import 'package:lecturio/core/data/repositories/note_repository.dart';
+import 'package:lecturio/features/study/domain/models/note.dart';
 
-class StudyPage extends StatelessWidget {
+class StudyPage extends StatefulWidget {
   const StudyPage({super.key});
+
+  @override
+  State<StudyPage> createState() => _StudyPageState();
+}
+
+class _StudyPageState extends State<StudyPage> {
+  final _noteRepository = sl<NoteRepository>();
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +68,7 @@ class StudyPage extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => const AiNoteGeneratorSheet(),
-    );
+    ).then((_) => setState(() {})); // Refresh notes after sheet closes
   }
 
   Widget _buildActionCard({
@@ -120,20 +130,39 @@ class StudyPage extends StatelessWidget {
   }
 
   Widget _buildRecentNotesList() {
+    final notes = _noteRepository.getAllNotes();
+
+    if (notes.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 24),
+          child: Text(
+            'No notes yet. Generate some with AI!',
+            style: GoogleFonts.outfit(color: AppColors.textSecondary),
+          ),
+        ),
+      );
+    }
+
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: 4,
+      itemCount: notes.length,
       separatorBuilder: (context, index) => const SizedBox(height: 12),
       itemBuilder: (context, index) {
+        final note = notes[index];
         return Card(
           child: ListTile(
             leading: const CircleAvatar(
               backgroundColor: AppColors.primaryNavy,
               child: Icon(Icons.description, color: AppColors.accentCoral),
             ),
-            title: const Text('Quantum Physics Intro'),
-            subtitle: const Text('Summary, Key Concepts, Quick Review'),
+            title: Text(note.title),
+            subtitle: Text(
+              note.content.length > 50
+                  ? note.content.substring(0, 50) + '...'
+                  : note.content,
+            ),
             trailing: const Icon(Icons.arrow_forward_ios, size: 14),
             onTap: () {},
           ),

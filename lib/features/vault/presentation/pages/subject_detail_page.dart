@@ -32,45 +32,34 @@ class SubjectDetailPage extends StatelessWidget {
   }
 
   Widget _buildNotesList() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: 3,
-      itemBuilder: (context, index) {
-        return Card(
-          margin: const EdgeInsets.only(bottom: 12),
-          child: ListTile(
-            title: Text('Lecture ${index + 1}: Key Concepts'),
-            subtitle: Text('Created on Oct ${12 + index}, 2023'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () {},
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.notes, size: 48, color: Colors.grey),
+          SizedBox(height: 16),
+          Text(
+            'No notes for this subject yet',
+            style: TextStyle(color: Colors.grey),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 
   Widget _buildFilesList() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: 5,
-      itemBuilder: (context, index) {
-        return Card(
-          margin: const EdgeInsets.only(bottom: 12),
-          child: ListTile(
-            leading: Icon(
-              index % 2 == 0 ? Icons.picture_as_pdf : Icons.image,
-              color: index % 2 == 0 ? Colors.redAccent : Colors.blueAccent,
-            ),
-            title: Text(
-              index % 2 == 0
-                  ? 'Handout_$index.pdf'
-                  : 'Whiteboard_Snap_$index.jpg',
-            ),
-            subtitle: const Text('Added 2 days ago • 2.4 MB'),
-            trailing: const Icon(Icons.download_rounded),
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.picture_as_pdf, size: 48, color: Colors.grey),
+          SizedBox(height: 16),
+          Text(
+            'No files for this subject yet',
+            style: TextStyle(color: Colors.grey),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }
