@@ -3,6 +3,7 @@ import 'package:lecturio/core/constants/colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lecturio/features/vault/presentation/pages/subject_detail_page.dart';
 import 'package:lecturio/features/vault/presentation/widgets/upload_file_sheet.dart';
+import 'package:lecturio/features/vault/presentation/widgets/add_subject_sheet.dart';
 import 'package:lecturio/injection_container.dart';
 import 'package:lecturio/core/data/repositories/subject_repository.dart';
 import 'package:lecturio/core/data/repositories/note_repository.dart';
@@ -24,8 +25,20 @@ class _VaultPageState extends State<VaultPage> {
       appBar: AppBar(
         title: const Text('Lecture Vault'),
         actions: [
-          IconButton(icon: const Icon(Icons.search), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.filter_list), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.create_new_folder_rounded),
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => const AddSubjectSheet(),
+              ).then((value) {
+                if (value == true) setState(() {});
+              });
+            },
+          ),
+          const SizedBox(width: 8),
         ],
       ),
       body: Padding(
@@ -49,11 +62,35 @@ class _VaultPageState extends State<VaultPage> {
                   final subjects = sl<SubjectRepository>().getAllSubjects();
                   if (subjects.isEmpty) {
                     return Center(
-                      child: Text(
-                        'No subjects created yet',
-                        style: GoogleFonts.outfit(
-                          color: AppColors.textSecondary,
-                        ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.folder_open_rounded,
+                            size: 64,
+                            color: AppColors.textSecondary.withOpacity(0.5),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No subjects created yet',
+                            style: GoogleFonts.outfit(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor: Colors.transparent,
+                                builder: (context) => const AddSubjectSheet(),
+                              ).then((value) {
+                                if (value == true) setState(() {});
+                              });
+                            },
+                            child: const Text('Create your first folder'),
+                          ),
+                        ],
                       ),
                     );
                   }
@@ -87,15 +124,22 @@ class _VaultPageState extends State<VaultPage> {
       floatingActionButton: FloatingActionButton(
         heroTag: 'vault_fab',
         onPressed: () {
+          final subjects = sl<SubjectRepository>().getAllSubjects();
+          if (subjects.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Please create a subject folder first!'),
+              ),
+            );
+            return;
+          }
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
             backgroundColor: Colors.transparent,
             builder: (context) => const UploadFileSheet(),
           ).then((value) {
-            if (value == true) {
-              setState(() {});
-            }
+            if (value == true) setState(() {});
           });
         },
         backgroundColor: AppColors.accentCoral,
@@ -188,8 +232,11 @@ class _VaultPageState extends State<VaultPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                SubjectDetailPage(subjectName: name, subjectColor: color),
+            builder: (context) => SubjectDetailPage(
+              subjectName: name,
+              subjectColor: color,
+              subjectId: name,
+            ), // Fixed constructor
           ),
         );
       },
